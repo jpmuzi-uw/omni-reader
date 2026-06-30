@@ -44,37 +44,64 @@ noise_metrics <- bg_data |>
     image_roughness = mean(stdev/suvmean),
     bkg_var = group_stdev / group_mean
   ) 
+noise_metrics
 # Plots -------------------------------------------------------------------
 
-# Background variance by scan type & duration
-
+# Background variance (Noise) by scan type & duration
+# we are using stdev in mean (and not dividing by mean of mean) because the mean is very consistent
 noise_metrics |> 
-  ggplot(aes(x = afd/1000, y = bkg_var, color = type, shape = type)) +
+  ggplot(aes(x = afd/1000, y = group_stdev, color = type, shape = type)) +
   geom_point() +
   geom_line() +
-  scale_x_continuous(breaks = c(90,120,150,180)) +
+  scale_x_continuous(breaks = c(90,120,150,180), minor_breaks = NULL) +
   #scale_y_continuous(expand = c(0, 0), limits = c(0, 0.03)) +
   labs(
-    title = "Background variance by scan type & duration",
+    title = "Noise by scan type & duration",
     x = "Scan Duration (seconds)",
-    y = "Background variance: CoV (stdev / mean)",
+    y = "Noise (stdev in ROI mean)",
     color = "Reconstruction",
     shape = "Reconstruction"
   ) +
   theme_minimal()
 
-# Image Roughness
+# Image Roughness - Mean ROI CoV (stdev/mean)
 noise_metrics |> 
   ggplot(aes(x = afd/1000, y = image_roughness, color = type, shape = type)) +
   geom_point() +
   geom_line() +
-  scale_x_continuous(breaks = c(90,120,150,180)) +
+  scale_x_continuous(breaks = c(90,120,150,180), minor_breaks = NULL) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
   labs(
     title = "Image Roughness in ROI group by scan type/duration",
     x = "Scan Duration (seconds)",
-    y = "Image Roughness",
+    y = "Mean of ROI CoV",
     color = "Reconstruction",
     shape = "Reconstruction"
   ) +
   theme_minimal()
+
+noise_metrics |> 
+  ggplot(aes(x = afd/1000, y = group_stdev, color = type, shape = type)) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks = c(90,120,150,180), minor_breaks = NULL)
+
+noise_metrics |> 
+  ggplot(aes(x = afd/1000, y = group_mean, color = type, shape = type)) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks = c(90,120,150,180), minor_breaks = NULL) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1))
+
+# Comparison of Noise Metrics
+noise_metrics |> 
+  ggplot(aes(x = image_roughness, y = group_stdev, color = type, shape = type)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "",
+    x = "mean of ROI CoV",
+    y = "Stdev of ROI means",
+    color = "Reconstruction",
+    shape = "Reconstruction"
+  )
