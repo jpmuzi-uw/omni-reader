@@ -17,31 +17,53 @@ sphere_data <- bind_rows(omni = omni_spheres,dmi = dmi_spheres, .id = "scanner")
     seriesdesc == "150s TOF AC" ~ "ToF OSEM",
     seriesdesc == "150s QClear AC" ~ "QClear"
   )) |> 
-  mutate(cov = stdev/suvmean) |> 
+  mutate(
+    cov = stdev/suvmean, 
+    sph_dia = parse_number(str_match(contourname,pattern = "(\\d\\d)mm") |> as.tibble() |> select(2) |> pull() )
+      ) |> 
   pivot_longer(cols = starts_with("suv",ignore.case = T) | stdev | cov, names_to = "measure")
 
 # Plots comparing SUV measures
-sphere_suv_plot <- sphere_data |> 
-  filter(grepl("suv",measure)) |> 
-  ggplot(aes(x = volume, y = value,color = seriesdesc)) +
-  geom_line(aes(linetype = scanner),linewidth = 1) +
-  geom_point(size = 2) +
-  scale_color_paletteer_d("lisa::GustavKlimt") +
-  labs(
-    x = "Sphere Volume",
-    y = "SUV",
-    title = "SUV measure comparison for Omni & DMI",
-    subtitle = "NEMA IQ Phantom - Scan duration 150s",
-    color = "Reconstruction Type",
-    linetype = "Scanner"
-  ) +
-  facet_wrap(~measure)
+
+sphere_suv_plot_gen <- function(suvtype = ""){
+  sphere_data |> 
+    filter(grepl("suv",measure)) |>
+    filter(grepl(suvtype,measure,ignore.case = T)) |> 
+    ggplot(aes(
+      x = sph_dia, #volume or sph_dia (remember to update label and comment out scale_x)
+      y = value,
+      color = seriesdesc)
+      ) +
+    geom_line(aes(linetype = scanner),linewidth = 1) +
+    geom_point(size = 2) +
+    scale_color_paletteer_d("lisa::GustavKlimt") +
+    scale_x_continuous(breaks = c(10,13,17,22,28,37)) +
+    labs(
+      x = "Sphere Diameter",
+      y = suvtype,
+      title = paste0(suvtype," comparison for Omni & DMI"),
+      subtitle = "NEMA IQ Phantom - Scan duration 150s",
+      color = "Reconstruction Type",
+      linetype = "Scanner"
+    ) 
+}
+
+save_suv_plot <- function(suvtype = ""){
+  ggsave(
+    plot = sphere_suv_plot_gen(suvtype),
+    filename = paste0("plots/omni_dmi_sphere_dia_",suvtype,".png"),
+    device = "png"
+  )
+}
+
+sphere_suv_plot_gen("") + facet_wrap(~measure) + labs(title = "SUV comparison for Omni & DMI")
 
 ggsave(
   plot = sphere_suv_plot,
   filename = "plots/omni_dmi_sphere_suv.png",
   device = "png"
 )
+
 # stdev plot
 stdev_sphere_plot <- sphere_data |> 
   filter(measure == "stdev") |>   
