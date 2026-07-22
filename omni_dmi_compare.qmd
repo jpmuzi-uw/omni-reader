@@ -8,7 +8,24 @@ editor: visual
 ```{r}
 #| label: load data
 #| include: false
-source("load_data_for_dmi_omni_compare.R")
+
+# libraries ---------------------------------------------------------------
+
+library(tidyverse)
+library(paletteer)
+
+# load data ---------------------------------------------------------------
+
+omni_phantom_data_filename <- r"(data/20250626_NEMA_IQ_Stats_2.csv)"
+omni_phantom_df <- read.csv(omni_phantom_data_filename) |>
+  select(-seriestime) |> 
+  filter(grepl("150",seriesdesc))
+
+dmi_phantom_df <- read_csv("data/harm_contour_stats_DMI-2025-06-26.csv")|>
+  select(-seriestime) |> 
+  filter(grepl(" AC", seriesdesc)) |> 
+  filter(!grepl("00", contourname))
+
 ```
 
 We scanned a NEMA IQ phantom back to back on the DMI and Omni. The phantom was filled with a 4:1 sphere to background ratio. The acquisition was 10 minutes long on each scanner and then reconstructed as shorter time-points. This analysis compares the 150 second duration scans. The Omni was reconstructed with OSEM, QClear as well as the machine learning options (MPDL and HPDL). The DMI has ToF and QClear reconstructions.
@@ -126,7 +143,7 @@ noise_metrics <- bg_data |>
     image_roughness = mean(stdev/suvmean),
     bkg_var = group_stdev / group_mean
   ) 
-knitr::kable(noise_metrics)
+knitr::kable(noise_metrics,digits = 3)
 ```
 
 Figure 3: Plot of phantom background noise, with noise defined as the standard deviation in the SUVmean values for the 50 regions.
