@@ -147,6 +147,27 @@ img_rough_plot <- noise_metrics |>
   ) +
   theme_minimal()
 
+# Image Roughness - mean between replications
+img_rough_plot <- noise_metrics |> 
+  ggplot(aes(x = afd/1000, y = image_roughness_mean, color = type, shape = type)) +
+  geom_point() +
+  geom_line() +
+  #geom_smooth(se = F) +
+  scale_x_continuous(breaks = c(60,90,120,150,180), minor_breaks = NULL) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 0.1)) +
+  labs(
+    title = "Image Roughness in ROI group by scan type/duration",
+    x = "Scan Duration (seconds)",
+    y = "Mean of ROI CoV",
+    color = "Reconstruction",
+    shape = "Reconstruction",
+    subtitle = "Smoothed mean of replications"
+  ) +
+  theme_minimal()
+
+# Comparison of Noise Metrics (Noise V IR) --------------------------------
+
+
 # Comparison of Noise Metrics to see if there are any patterns
 noise_chull <- noise_metrics |> group_by(type) |> slice(chull(image_roughness,group_stdev))
 noise_metrics |> 
@@ -156,13 +177,80 @@ noise_metrics |>
   scale_fill_viridis_d()+
   scale_color_viridis_d()+
   labs(
-    title = "Stdev of SUVmean vs mean CoV in SUVmean",
-    x = "mean of ROI CoV",
-    y = "Stdev of ROI means",
+    title = "Noise vs Image Roughness - Reconstruction Type",
+    subtitle = "Stdev of SUVmean vs mean CoV in SUVmean",
+    x = "Image Roughness (mean of ROI CoV)",
+    y = "Noise (Stdev of ROI means)",
     color = "Reconstruction",
     shape = "Reconstruction",
     fill  = "Reconstruction"
   )
+# Chull comparison with AFD
+noise_chull_afd <- noise_metrics |> 
+  mutate(afd = paste0(afd/1000,"s")) |> 
+  mutate(afd = factor(afd, levels = c("60s","90s","120s","150s","180s"))) |> 
+  group_by(afd) |> 
+  slice(chull(image_roughness,group_stdev))
+noise_metrics |> 
+  mutate(afd = paste0(afd/1000,"s")) |> 
+  mutate(afd = factor(afd, levels = c("60s","90s","120s","150s","180s"))) |> 
+  ggplot(aes(x = image_roughness, y = group_stdev, color = afd, fill = afd, shape = afd)) +
+  geom_point() +
+  geom_polygon(data = noise_chull_afd, alpha = 0.4) +
+  scale_fill_viridis_d()+
+  scale_color_viridis_d()+
+  labs(
+    title = "Noise vs Image Roughness - Scan Duration",
+    subtitle = "Stdev of SUVmean vs mean CoV in SUVmean",
+    x = "Image Roughness (mean of ROI CoV)",
+    y = "Noise (Stdev of ROI means)",
+    color = "Duration",
+    shape = "Duration",
+    fill  = "Duration"
+  )
+
+
+# Error bar plots ---------------------------------------------------------
+
+# Mean of replications w/  error bars + facet
+noise_metrics |>
+  ggplot(aes(x = afd/1000, y = group_stdev, color = type)) +
+  geom_point(aes(shape = type)) +
+  geom_line(data = summary_noise_metrics,aes(x = afd/1000, y= group_stdev_mean, color = type)) +
+  #geom_line(aes(y = group_stdev_min), alpha = 0.8) +
+  #geom_line(aes(y = group_stdev_max), alpha = 0.8) +
+  scale_x_continuous(breaks = c(60,90,120,150,180), minor_breaks = NULL) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 0.03)) +
+  labs(
+    title = "Noise by scan type & duration",
+    x = "Scan Duration (seconds)",
+    y = "Noise (stdev in ROI mean)",
+    color = "Reconstruction",
+    shape = "Reconstruction",
+    subtitle = ""
+  ) +
+  theme_minimal() +
+  facet_wrap(~type)
+
+# Image Roughness w/ error bars + facet
+noise_metrics |>
+  ggplot(aes(x = afd/1000, y = image_roughness, color = type)) +
+  geom_point(aes(shape = type)) +
+  geom_line(data = summary_noise_metrics,aes(x = afd/1000, y= image_roughness_mean, color = type)) +
+  #geom_line(aes(y = group_stdev_min), alpha = 0.8) +
+  #geom_line(aes(y = group_stdev_max), alpha = 0.8) +
+  scale_x_continuous(breaks = c(60,90,120,150,180), minor_breaks = NULL) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 0.1)) +
+  labs(
+    title = "Image Roughness by scan type & duration",
+    x = "Scan Duration (seconds)",
+    y = "Image Roughness (mean CoV)",
+    color = "Reconstruction",
+    shape = "Reconstruction",
+    subtitle = ""
+  ) +
+  theme_minimal() +
+  facet_wrap(~type)
 
 # Exploratory plots -------------------------------------------------------
 
@@ -200,6 +288,7 @@ first_noise_metrics <- omni_bg_df |>
     bkg_var_noise = group_stdev / group_mean
   )
 
+# stdev (noise/bkg var) plot for first recon
 first_stdev_plot <- first_noise_metrics |>
   ggplot(aes(x = afd/1000, y = group_stdev, color = type, shape = type)) +
   geom_point() +
@@ -216,6 +305,7 @@ first_stdev_plot <- first_noise_metrics |>
   ) +
   theme_minimal()
 
+#Image Roughness (CoV) first recon
 first_img_rough_plot <- first_noise_metrics |> 
   ggplot(aes(x = afd/1000, y = image_roughness, color = type, shape = type)) +
   geom_point() +
@@ -232,6 +322,7 @@ first_img_rough_plot <- first_noise_metrics |>
   ) +
   theme_minimal()
 
+# combination of first and mean plots.  Lack of significant change
 comparison_plot <- (first_stdev_plot + (mean_stdev_plot+labs(title="")) + plot_layout(axes = "collect")) / (first_img_rough_plot + (img_rough_plot + labs(title = "") +theme(legend.position = "none")) + plot_layout(axes = "collect")) + plot_layout(guides = "collect")
 comparison_plot
 
