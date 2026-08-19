@@ -1,0 +1,25 @@
+---
+title: "Omni Reader Results Analysis"
+author: "Peter Muzi"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: libraries
+#| include: false
+
+library(tidyverse)
+
+```
+```{r}
+#| label: dataframes
+#| include: false
+
+reader_key_file = r"(data/omni_reader_list.csv)"
+results_dir = r"(data/CT_Lesions_results_20260814)"
+
+reader_key_df <- read.csv(file = reader_key_file)
+results_list <- 
+```
+

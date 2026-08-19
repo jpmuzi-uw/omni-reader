@@ -1,0 +1,3 @@
+﻿"reader","patient_id","image_quality","noise","conspicuity","confidence","acceptability","UID_Reader","study_opened_unix","response_logged_unix"
+"-","-","-","-","-","-","-","-","-","-"
+"echoi12","Training_000","3","3","-1","3","2","2.16.840.1.114362.1.12256641.24548793824.736640003.315.843_echoi12","1780964471465","1780964913528"

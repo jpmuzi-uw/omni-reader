@@ -1,0 +1,4 @@
+﻿"reader","patient_id","image_quality","noise","conspicuity","confidence","acceptability","UID_Reader","study_opened_unix","response_logged_unix"
+"-","-","-","-","-","-","-","-","-","-"
+"mmatesan","Training_000","3","2","-1","3","2","2.16.840.1.114362.1.12256641.24548793824.736640003.315.843_mmatesan","1779838680841","1779838755898"
+"mmatesan","035","3","3","-1","3","2","2.16.840.1.114362.1.12493972.27098703137.736304678.104.9098_mmatesan","1782779568026","1782779631048"
