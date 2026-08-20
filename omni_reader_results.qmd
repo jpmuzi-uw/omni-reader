@@ -8,18 +8,69 @@ editor: visual
 ```{r}
 #| label: libraries
 #| include: false
-
+#| warning: false
 library(tidyverse)
 
 ```
+
 ```{r}
-#| label: dataframes
+#| label: reader_results
 #| include: false
 
+# key file contains anonymizing information about readers
 reader_key_file = r"(data/omni_reader_list.csv)"
 results_dir = r"(data/CT_Lesions_results_20260814)"
+reader_key_df <- read_csv(file = reader_key_file)
+results_list <- list.files(path = results_dir, pattern = ".csv$",full.names = T)
+reader_results <- read_csv(results_list)
 
-reader_key_df <- read.csv(file = reader_key_file)
-results_list <- 
+# cleaning results file
+reader_results <- reader_results |> 
+  # Remove null and training data
+  filter(reader != "-" & !grepl("^Train",patient_id)) |> 
+  left_join(
+    # join on keys for anonymization
+    reader_key_df |> select(user,order_id,reader_id),
+            by = join_by(reader == user)
+    ) |> 
+  relocate(reader_id) |> 
+  # drop netids
+  select(-reader) |> 
+  #drop readers who didnt finish
+  filter(!is.na(reader_id) & reader_id != "06") 
+```
+
+How many patients did each reader review:
+
+```{r}
+#| label: reader_summary
+#| echo: false
+#| layout-ncol: 2
+
+reader_results |> 
+  group_by(reader_id, order_id) |> 
+  summarize( n_patients = n()) |> 
+  knitr::kable(col.names = c("Reader","Order ID","Patients"))
+```
+
+Which patients had fewer than 6 reads:
+```{r}
+#| label: missing_patient_summary
+#| echo: false
+#| layout-ncol: 2
+
+reader_results |> 
+  group_by(patient_id) |> 
+  summarise(n_readers = n()) |> 
+  filter(n_readers < max(n_readers)) |> 
+  knitr::kable(col.names = c("Patient Id","Readers"))
+
+```
+
+```{r}
+#| echo: false
+
+
+
 ```
 
