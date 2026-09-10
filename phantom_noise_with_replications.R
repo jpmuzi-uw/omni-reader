@@ -113,6 +113,7 @@ noise_metrics |>
   ) +
   theme_minimal() 
 
+# With smoothed average
 noise_metrics |>
   ggplot(aes(x = afd/1000, y = group_stdev, color = type, shape = type)) +
   geom_point() +
@@ -131,7 +132,7 @@ noise_metrics |>
 
 
 # Image Roughness - Mean ROI CoV (stdev/mean)
-img_rough_plot <- noise_metrics |> 
+img_rough_plot_smooth <- noise_metrics |> 
   ggplot(aes(x = afd/1000, y = image_roughness, color = type, shape = type)) +
   geom_point() +
   geom_smooth(se = F) +
@@ -148,7 +149,7 @@ img_rough_plot <- noise_metrics |>
   theme_minimal()
 
 # Image Roughness - mean between replications
-img_rough_plot <- noise_metrics |> 
+img_rough_plot_mean <- summary_noise_metrics |> 
   ggplot(aes(x = afd/1000, y = image_roughness_mean, color = type, shape = type)) +
   geom_point() +
   geom_line() +
@@ -161,12 +162,11 @@ img_rough_plot <- noise_metrics |>
     y = "Mean of ROI CoV",
     color = "Reconstruction",
     shape = "Reconstruction",
-    subtitle = "Smoothed mean of replications"
+    subtitle = "Mean of replications"
   ) +
   theme_minimal()
 
 # Comparison of Noise Metrics (Noise V IR) --------------------------------
-
 
 # Comparison of Noise Metrics to see if there are any patterns
 noise_chull <- noise_metrics |> group_by(type) |> slice(chull(image_roughness,group_stdev))
@@ -258,6 +258,7 @@ noise_metrics |>
 omni_bg_df |> 
   ggplot(aes(x = suvmean,y = as.factor(slice_index),fill=as.factor(slice_index))) +
   ggridges::geom_density_ridges(alpha=0.8,quantile_lines = T, quantiles = 2) +
+  scale_x_continuous(limits = c(0,1.05)) +
   labs(
     x = "SUVmean",
     y = "Slice Index",
@@ -304,6 +305,7 @@ first_stdev_plot <- first_noise_metrics |>
     subtitle = "Initial reconstruction"
   ) +
   theme_minimal()
+first_stdev_plot
 
 #Image Roughness (CoV) first recon
 first_img_rough_plot <- first_noise_metrics |> 
@@ -321,8 +323,9 @@ first_img_rough_plot <- first_noise_metrics |>
     subtitle = "Initial reconstruction"
   ) +
   theme_minimal()
+first_img_rough_plot
 
 # combination of first and mean plots.  Lack of significant change
-comparison_plot <- (first_stdev_plot + (mean_stdev_plot+labs(title="")) + plot_layout(axes = "collect")) / (first_img_rough_plot + (img_rough_plot + labs(title = "") +theme(legend.position = "none")) + plot_layout(axes = "collect")) + plot_layout(guides = "collect")
+comparison_plot <- (first_stdev_plot + (mean_stdev_plot+labs(title="")) + plot_layout(axes = "collect")) / (first_img_rough_plot + (img_rough_plot_mean + labs(title = "") +theme(legend.position = "none")) + plot_layout(axes = "collect")) + plot_layout(guides = "collect")
 comparison_plot
 
