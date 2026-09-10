@@ -8,7 +8,7 @@
 
 <meta name="author" content="Peter Muzi">
 
-<title>Omni Reader Results Analysis</title>
+<title>Phantom Noise</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -24,20 +24,39 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="omni_reader_results_files/libs/clipboard/clipboard.min.js"></script>
-<script src="omni_reader_results_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="omni_reader_results_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="omni_reader_results_files/libs/quarto-html/popper.min.js"></script>
-<script src="omni_reader_results_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="omni_reader_results_files/libs/quarto-html/anchor.min.js"></script>
-<link href="omni_reader_results_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="omni_reader_results_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="omni_reader_results_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="omni_reader_results_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="omni_reader_results_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="phantom_noise_doc_files/libs/clipboard/clipboard.min.js"></script>
+<script src="phantom_noise_doc_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="phantom_noise_doc_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="phantom_noise_doc_files/libs/quarto-html/popper.min.js"></script>
+<script src="phantom_noise_doc_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="phantom_noise_doc_files/libs/quarto-html/anchor.min.js"></script>
+<link href="phantom_noise_doc_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="phantom_noise_doc_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="phantom_noise_doc_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="phantom_noise_doc_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="phantom_noise_doc_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -50,7 +69,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Omni Reader Results Analysis</h1>
+<h1 class="title">Phantom Noise</h1>
 </div>
 
 
@@ -73,86 +92,108 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>How many patients did each reader review:</p>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has regrouped the output.
-ℹ Summaries were computed grouped by reader_id and order_id.
-ℹ Output is grouped by reader_id.
-ℹ Use `summarise(.groups = "drop_last")` to silence this message.
-ℹ Use `summarise(.by = c(reader_id, order_id))` for per-operation grouping
-  (`?dplyr::dplyr_by`) instead.</code></pre>
-</div>
-<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>We scanned a NEMA IQ phantom back to back on the DMI and Omni. The phantom was filled with a 4:1 sphere to background ratio. The acquisition was 10 minutes long on each scanner and then reconstructed as shorter time-points.</p>
+<p>The Omni was reconstructed with OSEM, QClear as well as the machine learning options (MPDL and HPDL). The DMI has ToF and QClear reconstructions. The Omni scans were reconstructed at multiple durations (60, 90, 120, 150, 180 seconds), the DMI is only 150 seconds, the current clinical default. The Omni scans were also replicated multiple times for more robust statistics, that process has not yet been done on the DMI data.</p>
+</section>
+<section id="rois" class="level2">
+<h2 class="anchored" data-anchor-id="rois">ROIs</h2>
+<p>ROIs were drawn on the CT, then a MIM workflow was used to copy them to the various PETs and extract SUV metrics.</p>
+<ol type="1">
+<li>Six spherical ROIs drawn inside each sphere</li>
+<li>Two cylindrical ROIs in the lung insert, one near the spheres the other near the background</li>
+<li>Fifty circular ROIs in the background, 10 on 5 different slices.</li>
+</ol>
+<div id="fig-roi-example" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-roi-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">Reader</th>
-<th style="text-align: left;">Order ID</th>
-<th style="text-align: right;">Patients</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">01</td>
-<td style="text-align: left;">reader1</td>
-<td style="text-align: right;">60</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">02</td>
-<td style="text-align: left;">reader2</td>
-<td style="text-align: right;">60</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">03</td>
-<td style="text-align: left;">reader3</td>
-<td style="text-align: right;">60</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">04</td>
-<td style="text-align: left;">reader4</td>
-<td style="text-align: right;">59</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">07</td>
-<td style="text-align: left;">reader2</td>
-<td style="text-align: right;">60</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">08</td>
-<td style="text-align: left;">reader5</td>
-<td style="text-align: right;">60</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">09</td>
-<td style="text-align: left;">reader1</td>
-<td style="text-align: right;">30</td>
-</tr>
-</tbody>
-</table>
+<div class="quarto-layout-cell" style="flex-basis: 48.5%;justify-content: center;">
+<p><img src="images/ROI_location_img/spheres_crop.png" class="img-fluid figure-img"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 51.5%;justify-content: center;">
+<p><img src="images/ROI_location_img/background_crop.png" class="img-fluid figure-img"></p>
 </div>
 </div>
 </div>
-<p>Which patients had fewer than 6 reads:</p>
-<div class="cell quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th style="text-align: left;">Patient Id</th>
-<th style="text-align: right;">Readers</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-roi-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: ROI Positions
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="noise-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="noise-metrics">Noise Metrics</h2>
+<p>Noise (also referred to here as background variance) is the Coefficient of Variation (CoV) in the 50 background ROIs. We also evaluate Image Roughness, which is the mean of the CoV for each ROI. Both metrics are from work by Shan Tong <span class="citation" data-cites="Tong2010">(<a href="#ref-Tong2010" role="doc-biblioref">Tong et al. 2010</a>)</span></p>
+</section>
+<section id="omni-noise-plots" class="level2">
+<h2 class="anchored" data-anchor-id="omni-noise-plots">Omni Noise Plots</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phantom_noise_doc_files/figure-html/mean_stdev_plot_omni-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phantom_noise_doc_files/figure-html/omni%20noise%20scatter-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phantom_noise_doc_files/figure-html/image%20roughness%20mean-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phantom_noise_doc_files/figure-html/image%20roughness%20scatter-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="comparison-between-image-roughness-and-noise" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-between-image-roughness-and-noise">Comparison between image roughness and noise</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phantom_noise_doc_files/figure-html/omni_noise_vs_roughness-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="phantom_noise_doc_files/figure-html/omni_noise_vs_roughness_afd-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
 </div>
 
-</main>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Tong2010" class="csl-entry" role="listitem">
+Tong, S, A M Alessio, and P E Kinahan. 2010. <span>“Noise and Signal Properties in PSF-Based Fully 3D PET Image Reconstruction: An Experimental Evaluation.”</span> <em>Physics in Medicine and Biology</em> 55 (5): 1453–73. <a href="https://doi.org/10.1088/0031-9155/55/5/013">https://doi.org/10.1088/0031-9155/55/5/013</a>.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {

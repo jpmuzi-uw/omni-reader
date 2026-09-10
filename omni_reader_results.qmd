@@ -19,7 +19,7 @@ library(tidyverse)
 
 # key file contains anonymizing information about readers
 reader_key_file = r"(data/omni_reader_list.csv)"
-results_dir = r"(data/CT_Lesions_results_20260814)"
+results_dir = r"(data/CT_Lesions_Results_20260904)"
 reader_key_df <- read_csv(file = reader_key_file)
 results_list <- list.files(path = results_dir, pattern = ".csv$",full.names = T)
 reader_results <- read_csv(results_list)
@@ -54,15 +54,17 @@ reader_results |>
 ```
 
 Which patients had fewer than 6 reads:
+There's a code chunk here for checking which patients had missing reads, this troubleshooting isn't currently useful.
 ```{r}
 #| label: missing_patient_summary
-#| echo: false
+#| eval: false
+#| include: false
 #| layout-ncol: 2
 
 reader_results |> 
   group_by(patient_id) |> 
   summarise(n_readers = n()) |> 
-  filter(n_readers < max(n_readers)) |> 
+  filter(n_readers < 6) |> 
   knitr::kable(col.names = c("Patient Id","Readers"))
 
 ```
