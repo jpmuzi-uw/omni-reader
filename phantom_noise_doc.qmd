@@ -1,7 +1,7 @@
 ---
 title: "Phantom Noise"
 author: "Peter Muzi"
-format: html
+format: pdf
 bibliography: references.bib
 ---
 
@@ -169,6 +169,7 @@ dmi_noise_metrics <- dmi_bg_df |>
   ) 
 
 ```
+
 ## Omni Noise Plots
 
 ```{r}
@@ -262,7 +263,6 @@ omni_img_rough_plot_mean
 
 ```
 
-
 ```{r}
 #| label: image roughness scatter
 #| echo: false
@@ -287,8 +287,8 @@ omni_noise_metrics |>
   facet_wrap(~type)
 ```
 
-
 ## Comparison between image roughness and noise
+
 ```{r}
 #| label: omni_noise_vs_roughness
 #| echo: false
@@ -308,16 +308,9 @@ omni_noise_vs_roughness_recon <- omni_noise_metrics |>
     color = "Reconstruction",
     shape = "Reconstruction",
     fill  = "Reconstruction"
-<<<<<<< HEAD
-<<<<<<< HEAD
   ) +
   theme_minimal()
-=======
-  )
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
-=======
-  )
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
+
 omni_noise_vs_roughness_recon
 ```
 
@@ -347,15 +340,8 @@ omni_noise_vs_roughness_afd <- omni_noise_metrics |>
     color = "Duration",
     shape = "Duration",
     fill  = "Duration"
-<<<<<<< HEAD
-<<<<<<< HEAD
+
   )+
   theme_minimal()
-=======
-  )
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
-=======
-  )
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
 omni_noise_vs_roughness_afd
 ```

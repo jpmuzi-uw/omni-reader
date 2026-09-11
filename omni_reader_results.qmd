@@ -73,7 +73,8 @@ reader_results |>
 ```
 
 ```{r}
-#| echo: false
+#| eval: false
+#| include: false
 
 reader_order_file <- "data/readerOrders.csv"
 reader_orders <- read_csv(reader_order_file) |> 

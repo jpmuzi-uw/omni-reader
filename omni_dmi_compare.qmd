@@ -73,13 +73,7 @@ sphere_suv_facets <- sphere_data |>
   geom_line(aes(linetype = scanner),linewidth = 1) +
   geom_point(size = 2) +
   geom_hline(aes(yintercept = 4)) +
-<<<<<<< HEAD
-<<<<<<< HEAD
   scale_y_continuous(expand = c(0,0), limits = c(0,NA)) +
-=======
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
-=======
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
   scale_x_continuous(breaks = c(10,13,17,22,28,37), minor_breaks = NULL) +
   scale_color_paletteer_d("lisa::GustavKlimt") +
   labs(
@@ -190,7 +184,7 @@ noise_metrics |>
   theme_light()
 ```
 
-## Supplemental 
+## Supplemental
 
 Screenshots showing the locations of the ROIs
 
