@@ -22,12 +22,14 @@ reader_key_file = r"(data/omni_reader_list.csv)"
 results_dir = r"(data/CT_Lesions_results_20260814)"
 reader_key_df <- read_csv(file = reader_key_file)
 results_list <- list.files(path = results_dir, pattern = ".csv$",full.names = T)
-reader_results <- read_csv(results_list)
 
 # cleaning results file
-reader_results <- reader_results |> 
+reader_results <- read_csv(results_list,show_col_types = FALSE) |> 
   # Remove null and training data
   filter(reader != "-" & !grepl("^Train",patient_id)) |> 
+  # fill in missing cases
+  mutate(patient_id = parse_number(patient_id)) |> 
+  complete(patient_id = 1:60, reader) |> 
   left_join(
     # join on keys for anonymization
     reader_key_df |> select(user,order_id,reader_id),
@@ -37,7 +39,7 @@ reader_results <- reader_results |>
   # drop netids
   select(-reader) |> 
   #drop readers who didnt finish
-  filter(!is.na(reader_id) & reader_id != "06") 
+  filter(!is.na(reader_id) & reader_id != "06")
 ```
 
 How many patients did each reader review:
@@ -47,9 +49,10 @@ How many patients did each reader review:
 #| echo: false
 #| layout-ncol: 2
 
+#
 reader_results |> 
   group_by(reader_id, order_id) |> 
-  summarize( n_patients = n()) |> 
+  summarize( n_patients = n(), .groups = "drop") |> 
   knitr::kable(col.names = c("Reader","Order ID","Patients"))
 ```
 
@@ -70,7 +73,33 @@ reader_results |>
 ```{r}
 #| echo: false
 
+reader_order_file <- "data/readerOrders.csv"
+reader_orders <- read_csv(reader_order_file) |> 
+  rename(c(
+    reader1 = 1,
+    reader2 = 2,
+    reader3 = 3,
+    reader4 = 4,
+    reader5 = 5
+  ))|> 
+  filter(!is.na(reader1)) |> 
+  mutate(patient_rank = row_number()) |> 
+  pivot_longer(cols = starts_with("reader"), names_to = "order_id", values_to = "patient_id")
 
+# confirming all orders have 60 cases
+reader_orders |> 
+  group_by(order_id) |> 
+  summarize(n = n())
 
+reader_results |> 
+  #select(reader_id,order_id,patient_id,image_quality) |>
+  left_join(reader_orders, by = join_by(order_id == order_id, patient_id == patient_id)) |> 
+  arrange(reader_id, patient_rank) |> 
+  relocate(patient_rank,.after = patient_id) |> 
+  mutate(
+    prevv = lag(image_quality),
+    nextv = lead(image_quality)
+  ) |> 
+  filter(is.na(image_quality) | is.na(prevv) | is.na(nextv))
 ```
 
