@@ -3,6 +3,7 @@ title: "DMI - Omni compare"
 author: "Peter Muzi"
 format: html
 editor: visual
+fig-format: svg
 ---
 
 ```{r}
@@ -47,8 +48,16 @@ sphere_data <- bind_rows(omni = omni_spheres,dmi = dmi_spheres, .id = "scanner")
     seriesdesc == "150s TOF AC" ~ "ToF OSEM",
     seriesdesc == "150s QClear AC" ~ "QClear"
   )) |> 
-  mutate(cov = stdev/suvmean) |> 
-  pivot_longer(cols = starts_with("suv",ignore.case = T) | stdev | cov, names_to = "measure")
+  mutate(cov = stdev/suvmean,
+         sph_dia = str_match(contourname,pattern = "(\\d\\d)mm") |> 
+           as_tibble() |> 
+           select(2) |> 
+           pull() |> 
+           parse_number()
+         ) |> 
+  pivot_longer(
+    cols = starts_with("suv",ignore.case = T) | stdev | cov, 
+    names_to = "measure")
 
 ```
 
@@ -58,21 +67,32 @@ Figure 1: Comparison of SUV metrics between scanners
 #| label: Sphere SUV plot
 #| echo: false
 # Plots comparing SUV measures
-sphere_data |> 
+sphere_suv_facets <- sphere_data |> 
   filter(grepl("suv",measure)) |> 
-  ggplot(aes(x = volume, y = value,color = seriesdesc)) +
+  ggplot(aes(x = sph_dia, y = value,color = seriesdesc)) +
   geom_line(aes(linetype = scanner),linewidth = 1) +
   geom_point(size = 2) +
+  geom_hline(aes(yintercept = 4)) +
+<<<<<<< HEAD
+<<<<<<< HEAD
+  scale_y_continuous(expand = c(0,0), limits = c(0,NA)) +
+=======
+>>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
+=======
+>>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
+  scale_x_continuous(breaks = c(10,13,17,22,28,37), minor_breaks = NULL) +
   scale_color_paletteer_d("lisa::GustavKlimt") +
   labs(
-    x = "Sphere Volume",
+    x = "Sphere Diameter",
     y = "SUV",
     title = "SUV measure comparison for Omni & DMI",
     subtitle = "NEMA IQ Phantom - Scan duration 150s",
     color = "Reconstruction Type",
     linetype = "Scanner"
   ) +
-  facet_wrap(~measure)
+  facet_wrap(~measure) +
+  theme_light()
+sphere_suv_facets
 ```
 
 Figure 2: Standard Deviation in sphere ROI (SUV)
@@ -86,6 +106,7 @@ sphere_data |>
   ggplot(aes(x = volume, y = value,color = seriesdesc)) +
   geom_line(aes(linetype = scanner),linewidth = 1) +
   geom_point(size = 2) +
+  scale_y_continuous(breaks = seq(0.2,1,0.2)) +
   scale_color_paletteer_d("lisa::GustavKlimt") +
   labs(
     x = "Sphere Volume",
@@ -94,7 +115,8 @@ sphere_data |>
     subtitle = "NEMA IQ Phantom - Scan duration 150s",
     color = "Reconstruction Type",
     linetype = "Scanner"
-  )
+  )+
+  theme_light()
 ```
 
 The background region of the phantom had 30mm diameter circular ROIs drawn. 10 ROIs were spaced evenly on 5 slices totaling 50 ROIs
@@ -146,7 +168,7 @@ noise_metrics <- bg_data |>
 knitr::kable(noise_metrics,digits = 3)
 ```
 
-Figure 3: Plot of phantom background noise, with noise defined as the standard deviation in the SUVmean values for the 50 regions.
+Figure 3: Plot of phantom background noise, with noise defined as the standard deviation in SUVmean for the 50 regions.
 
 ```{r}
 #| label: Bkg Noise Plot
@@ -155,12 +177,56 @@ noise_metrics |>
   ggplot(aes(x = type, y = group_stdev, color = scanner)) +
   geom_point(size = 3) +
   scale_x_discrete() +
-  scale_y_continuous(limits = c(0, 0.03)) +
+  scale_y_continuous(
+    expand = c(0,0),
+    limits = c(0, 0.03)) +
   labs(
     title = "Noise in NEMA Phantom Background",
     subtitle = "Noise is defined as stdev in SUVmean between 50 Bkg ROIs",
     x = "Reconstruction Type",
     y = "Noise",
     color = "Scanner",
-  )
+  )+
+  theme_light()
+```
+
+## Supplemental 
+
+Screenshots showing the locations of the ROIs
+
+![](images/ROI_location_img/background.png)
+
+![](images/ROI_location_img/spheres.png)
+
+![](images/ROI_location_img/MIP_PT.png)
+
+### Zoom-in of metrics from first comparison
+
+```{r}
+#| label: SUV charts individual
+#| echo: false
+
+sphere_suv_charts <- function(suv_type){
+  sphere_data |> 
+    filter(grepl(suv_type,measure)) |> 
+    ggplot(aes(x = sph_dia, y = value,color = seriesdesc)) +
+    geom_line(aes(linetype = scanner),linewidth = 1) +
+    geom_point(size = 2) +
+    scale_x_continuous(breaks = c(10,13,17,22,28,37), minor_breaks = NULL) +
+    scale_y_continuous(expand = c(0,0), limits = c(0,NA))+
+    scale_color_paletteer_d("lisa::GustavKlimt") +
+    labs(
+      x = "Sphere Diameter",
+      y = suv_type,
+      title = paste0(suv_type," comparison for Omni & DMI"),
+      subtitle = "NEMA IQ Phantom - Scan duration 150s",
+      color = "Reconstruction Type",
+      linetype = "Scanner"
+    ) +
+    theme_minimal()
+}
+sphere_suv_charts("suvmax")
+sphere_suv_charts("suvpeak")
+sphere_suv_charts("suvmean")
+sphere_suv_charts("suvmin")
 ```
