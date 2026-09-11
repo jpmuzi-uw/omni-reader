@@ -118,79 +118,18 @@ ul.task-list li input[type="checkbox"] {
 <td style="text-align: left;">08</td>
 <td style="text-align: left;">reader5</td>
 <td style="text-align: right;">60</td>
-<<<<<<< HEAD
-=======
 </tr>
 <tr class="odd">
 <td style="text-align: left;">09</td>
 <td style="text-align: left;">reader1</td>
-<td style="text-align: right;">30</td>
->>>>>>> 637d5d66ce4f441baa6fdb3609b358d18454debe
+<td style="text-align: right;">60</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
-<p>Which patients had fewer than 6 reads:</p>
-<div class="cell quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th style="text-align: right;">Patient Id</th>
-<th style="text-align: right;">Readers</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 78 Columns: 5
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-dbl (5): reader 1, reader 2, reader 3, reader 4, reader 5
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 2
-  order_id     n
-  &lt;chr&gt;    &lt;int&gt;
-1 reader1     60
-2 reader2     60
-3 reader3     60
-4 reader4     60
-5 reader5     60</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 13 × 14
-   reader_id patient_id patient_rank image_quality noise conspicuity confidence
-   &lt;chr&gt;          &lt;dbl&gt;        &lt;int&gt; &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;     
- 1 01                45            1 2             2     -1          3         
- 2 02                50           51 1             1     -1          1         
- 3 02                56           52 &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;      
- 4 02                41           53 2             1     -1          3         
- 5 03                14           11 3             2     -1          3         
- 6 03                11           12 &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;      
- 7 03                 8           13 3             3     -1          3         
- 8 04                59           16 2             2     -1          2         
- 9 04                48           17 &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;      
-10 04                50           18 1             1     -1          1         
-11 08                45           58 2             2     -1          2         
-12 08                20           59 &lt;NA&gt;          &lt;NA&gt;  &lt;NA&gt;        &lt;NA&gt;      
-13 08                19           60 1             1     -1          1         
-# ℹ 7 more variables: acceptability &lt;chr&gt;, UID_Reader &lt;chr&gt;,
-#   study_opened_unix &lt;chr&gt;, response_logged_unix &lt;chr&gt;, order_id &lt;chr&gt;,
-#   prevv &lt;chr&gt;, nextv &lt;chr&gt;</code></pre>
-</div>
-</div>
+<p>Which patients had fewer than 6 reads: There’s a code chunk here for checking which patients had missing reads, this troubleshooting isn’t currently useful.</p>
 
 </main>
 <!-- /main column -->

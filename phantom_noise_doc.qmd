@@ -308,16 +308,9 @@ omni_noise_vs_roughness_recon <- omni_noise_metrics |>
     color = "Reconstruction",
     shape = "Reconstruction",
     fill  = "Reconstruction"
-<<<<<<< HEAD
-<<<<<<< HEAD
   ) +
   theme_minimal()
-=======
-  )
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
-=======
-  )
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
+
 omni_noise_vs_roughness_recon
 ```
 
@@ -347,15 +340,8 @@ omni_noise_vs_roughness_afd <- omni_noise_metrics |>
     color = "Duration",
     shape = "Duration",
     fill  = "Duration"
-<<<<<<< HEAD
-<<<<<<< HEAD
+
   )+
   theme_minimal()
-=======
-  )
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
-=======
-  )
->>>>>>> fc3036e04aef0c547787b95505b40154cc7a3921
 omni_noise_vs_roughness_afd
 ```
