@@ -1,7 +1,7 @@
 ---
 title: "Phantom Noise"
 author: "Peter Muzi"
-format: pdf
+format: html
 bibliography: references.bib
 ---
 
@@ -344,4 +344,83 @@ omni_noise_vs_roughness_afd <- omni_noise_metrics |>
   )+
   theme_minimal()
 omni_noise_vs_roughness_afd
+```
+
+```{r}
+#| label: omni_noise_vs_roughness_afd-recon-points
+#| echo: false
+color_option = "D"
+
+omni_noise_vs_roughness_afdrecon_point <- omni_noise_metrics |> 
+  mutate(afd = paste0(afd/1000,"s")) |> 
+  mutate(afd = factor(afd, levels = c("60s","90s","120s","150s","180s"))) |> 
+  ggplot(aes(x = image_roughness, y = group_stdev, 
+    color = type, 
+    fill = type)
+    ) +
+  geom_point(aes(shape = afd), stroke = 3,size = 2) +
+  #scale_fill_viridis_d(option = color_option, begin = 0)+
+  #scale_color_viridis_d(option = color_option, begin = 0)+
+  scale_shape_manual(values = c(16,17,15,18,3))+
+  labs(
+    title = "Noise vs Image Roughness",
+    subtitle = "Stdev of SUVmean vs mean CoV in SUVmean",
+    x = "Image Roughness (mean of ROI CoV)",
+    y = "Noise (Stdev of ROI means)",
+    color = "Recon Type",
+    shape = "Duration",
+    fill  = "Recon Type"
+  )+
+  theme_minimal()
+omni_noise_vs_roughness_afdrecon_point
+```
+
+```{r}
+#| label: omni_noise_vs_roughness_afd-recon-chull
+#| echo: false
+library(ggpattern)
+noise_chull_recon <- omni_noise_metrics |> 
+  group_by(type) |> 
+  slice(chull(image_roughness,group_stdev))
+
+noise_chull_afd <- omni_noise_metrics |> 
+  mutate(afd = paste0(afd/1000,"s")) |> 
+  mutate(afd = factor(afd, levels = c("60s","90s","120s","150s","180s"))) |> 
+  group_by(afd) |> 
+  slice(chull(image_roughness,group_stdev))
+
+omni_noise_vs_roughness_afdrecon_chull <- omni_noise_metrics |> 
+  mutate(afd = paste0(afd/1000,"s")) |> 
+  mutate(afd = factor(afd, levels = c("60s","90s","120s","150s","180s"))) |> 
+  ggplot(aes(x = image_roughness, y = group_stdev )) +
+  geom_polygon(data = noise_chull_recon, aes(fill = type), colour = "black", alpha = 0.2) +
+  geom_polygon_pattern(
+    data = noise_chull_afd,
+    aes(pattern_type = afd), 
+    pattern = "polygon_tiling",  
+    pattern_fill = "transparent",
+    #pattern_spacing = .5,
+    colour = "black", 
+    pattern_colour = "grey",
+    alpha = 0) +
+  geom_point(
+    aes(shape = afd,color = type, fill = type), 
+    stroke = 2, size = 3
+  ) +
+  scale_pattern_type_manual(values = c("hexagonal","pythagorean","rhombille","triangular","square"))+
+  #scale_fill_viridis_d()+
+  #scale_color_viridis_d()+
+  scale_shape_manual(values = c(16,17,15,18,3))+
+  labs(
+    title = "Noise vs Image Roughness",
+    subtitle = "Stdev of SUVmean vs mean CoV in SUVmean",
+    x = "Image Roughness (mean of ROI CoV)",
+    y = "Noise (Stdev of ROI means)",
+    color = "Recon Type",
+    shape = "Duration",
+    fill  = "Recon Type",
+    pattern_type = "Duration"
+  )+
+  theme_minimal()
+omni_noise_vs_roughness_afdrecon_chull
 ```
